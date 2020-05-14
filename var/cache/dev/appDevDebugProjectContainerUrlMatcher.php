@@ -107,20 +107,56 @@ class appDevDebugProjectContainerUrlMatcher extends Symfony\Bundle\FrameworkBund
 
         }
 
-        // app_default_index
-        if ('' === $trimmedPathinfo) {
-            $ret = array (  '_controller' => 'AppBundle\\Controller\\DefaultController::indexAction',  '_route' => 'app_default_index',);
-            if ('/' === substr($pathinfo, -1)) {
-                // no-op
-            } elseif ('GET' !== $canonicalMethod) {
-                goto not_app_default_index;
-            } else {
-                return array_replace($ret, $this->redirect($rawPathinfo.'/', 'app_default_index'));
+        elseif (0 === strpos($pathinfo, '/hello')) {
+            // app_default_hello
+            if (preg_match('#^/hello/(?P<name>[^/]++)$#sD', $pathinfo, $matches)) {
+                return $this->mergeDefaults(array_replace($matches, ['_route' => 'app_default_hello']), array (  '_controller' => 'AppBundle\\Controller\\DefaultController::hello',));
             }
 
-            return $ret;
+            // app_default_bye
+            if ('/hello' === $pathinfo) {
+                return array (  '_controller' => 'AppBundle\\Controller\\DefaultController::byeAction',  '_route' => 'app_default_bye',);
+            }
+
         }
-        not_app_default_index:
+
+        elseif (0 === strpos($pathinfo, '/l')) {
+            // app_item_list
+            if ('/list' === $pathinfo) {
+                return array (  '_controller' => 'AppBundle\\Controller\\ItemController::listAction',  '_route' => 'app_item_list',);
+            }
+
+            // app_login_login
+            if ('/login' === $pathinfo) {
+                return array (  '_controller' => 'AppBundle\\Controller\\LoginController::loginAction',  '_route' => 'app_login_login',);
+            }
+
+            // app_login_logout
+            if ('/logout' === $pathinfo) {
+                return array (  '_controller' => 'AppBundle\\Controller\\LoginController::logoutAction',  '_route' => 'app_login_logout',);
+            }
+
+        }
+
+        // app_item_add
+        if ('/add' === $pathinfo) {
+            return array (  '_controller' => 'AppBundle\\Controller\\ItemController::addAction',  '_route' => 'app_item_add',);
+        }
+
+        // app_item_delete
+        if ('/delete' === $pathinfo) {
+            return array (  '_controller' => 'AppBundle\\Controller\\ItemController::deleteAction',  '_route' => 'app_item_delete',);
+        }
+
+        // app_item_edit
+        if ('/edit' === $pathinfo) {
+            return array (  '_controller' => 'AppBundle\\Controller\\ItemController::editAction',  '_route' => 'app_item_edit',);
+        }
+
+        // app_login_register
+        if ('/register' === $pathinfo) {
+            return array (  '_controller' => 'AppBundle\\Controller\\LoginController::registerAction',  '_route' => 'app_login_register',);
+        }
 
         if ('/' === $pathinfo && !$allow) {
             throw new Symfony\Component\Routing\Exception\NoConfigurationException();
